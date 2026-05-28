@@ -21,6 +21,7 @@ class MyPlugin(Star):
         message = event.get_messages()
         message_chain = event.get_messages()  # 用户所发的消息的消息链 # from astrbot.api.message_components import *
         logger.info(message_chain)
+        error_code = {403, 404, 429, 500}
 
         def getimg(qq):
             url = "https://api.xiaoyu17love.top/API/bqbjh.php"
@@ -35,6 +36,8 @@ class MyPlugin(Star):
             imgUrl = j['data']['url']
             if j['code'] == 200:
                 return imgUrl
+            elif j['code'] in error_code:
+                return j['code']
             else:
                 return None
 
@@ -48,6 +51,9 @@ class MyPlugin(Star):
 
         URL = getimg(qq_id)
         if URL is None:
+            yield event.plain_result(f'制作失败，请到控制台查看详情')
+        elif URL == error_code:
+            logger.error(URL)
             yield event.plain_result(f'制作失败，请到控制台查看详情')
         else:
             yield event.image_result(f'{URL}')
