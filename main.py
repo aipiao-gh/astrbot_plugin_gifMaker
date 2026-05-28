@@ -2,6 +2,9 @@ import httpx
 from astrbot.api.event import filter, AstrMessageEvent, MessageEventResult
 from astrbot.api.star import Context, Star, register
 from astrbot.api import logger
+from astrbot.core.message.components import At
+from sqlalchemy import null
+
 
 class MyPlugin(Star):
     def __init__(self, context: Context):
@@ -13,35 +16,41 @@ class MyPlugin(Star):
     # 注册指令的装饰器。指令名为 helloworld。注册成功后，发送 `/helloworld` 就会触发这个指令，并回复 `你好, {user_name}!`
     @filter.command("doro")
     async def doro(self, event: AstrMessageEvent):
-        """生成doro敲头""" # 这是 handler 的描述，将会被解析方便用户了解插件内容。建议填写。
-        user_id = event.get_self_id()
-        user_name = event.get_sender_name()
-        message_str = event.message_str # 用户发的纯文本消息字符串
-        message_chain = event.get_messages() # 用户所发的消息的消息链 # from astrbot.api.message_components import *
+        """生成doro敲头"""  # 这是 handler 的描述，将会被解析方便用户了解插件内容。建议填写。
+        sender_id = event.get_sender_id()
+        message = event.get_messages()
+        message_chain = event.get_messages()  # 用户所发的消息的消息链 # from astrbot.api.message_components import *
         logger.info(message_chain)
-        try:
+
+        def getimg(qq):
             url = "https://api.xiaoyu17love.top/API/bqbjh.php"
             params = {
                 "apikey": "ef44b07b17eb4d52268d6619c73fcc604f565c3a2262aee6220bed0125c0d500",
                 "type": "zhitu",
                 "key": "doro_banging",
-                "qqs": [user_id],
+                "qqs": [qq],
             }
             response = httpx.get(url, params=params)
             j = response.json()
             imgUrl = j['data']['url']
             if j['code'] == 200:
-                yield event.image_result(f"{imgUrl}")  # 发送一条纯文本消息
+                return imgUrl
             else:
-                raise ValueError(f"请求失败！{j['code']}")
-        except(httpx.HTTPError,IOError) as e:
-            logger.error(e)
-            yield event.plain_result(f"制作表情包失败，请到控制台查看错误！")
-        except ValueError as e:
-            logger.error(e)
+                return None
 
+        qq_id = sender_id
+        for comp in message:
+            if isinstance(comp,At):
+                qq_id = comp.qq
+                break
 
+        yield event.plain_result(f'制作中')
 
+        URL = getimg(qq_id)
+        if URL is None:
+            yield event.plain_result(f'制作失败，请到控制台查看详情')
+        else:
+            yield event.image_result(f'{URL}')
 
     async def terminate(self):
         """可选择实现异步的插件销毁方法，当插件被卸载/停用时会调用。"""
