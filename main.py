@@ -3,8 +3,27 @@ from astrbot.api.event import filter, AstrMessageEvent, MessageEventResult
 from astrbot.api.star import Context, Star, register
 from astrbot.api import logger
 from astrbot.core.message.components import At
-from sqlalchemy import null
 
+error_code = {403, 404, 429, 500}
+
+
+def getimg(qq, key):
+    url = "https://api.xiaoyu17love.top/API/bqbjh.php"
+    params = {
+        "apikey": "ef44b07b17eb4d52268d6619c73fcc604f565c3a2262aee6220bed0125c0d500",
+        "type": "zhitu",
+        "key": key,
+        "qqs": [qq],
+    }
+    response = httpx.get(url, params=params)
+    j = response.json()
+    imgUrl = j['data']['url']
+    if j['code'] == 200:
+        return imgUrl
+    elif j['code'] in error_code:
+        return j['code']
+    else:
+        return None
 
 class MyPlugin(Star):
     def __init__(self, context: Context):
@@ -21,42 +40,48 @@ class MyPlugin(Star):
         message = event.get_messages()
         message_chain = event.get_messages()  # 用户所发的消息的消息链 # from astrbot.api.message_components import *
         logger.info(message_chain)
-        error_code = {403, 404, 429, 500}
-
-        def getimg(qq):
-            url = "https://api.xiaoyu17love.top/API/bqbjh.php"
-            params = {
-                "apikey": "ef44b07b17eb4d52268d6619c73fcc604f565c3a2262aee6220bed0125c0d500",
-                "type": "zhitu",
-                "key": "doro_banging",
-                "qqs": [qq],
-            }
-            response = httpx.get(url, params=params)
-            j = response.json()
-            imgUrl = j['data']['url']
-            if j['code'] == 200:
-                return imgUrl
-            elif j['code'] in error_code:
-                return j['code']
-            else:
-                return None
 
         qq_id = sender_id
         for comp in message:
-            if isinstance(comp,At):
+            if isinstance(comp, At):
                 qq_id = comp.qq
                 break
 
         yield event.plain_result(f'制作中')
 
-        URL = getimg(qq_id)
+        URL = getimg(qq_id, "doro_banging")
         if URL is None:
             yield event.plain_result(f'制作失败，请到控制台查看详情')
-        elif URL == error_code:
+        elif URL in error_code:
             logger.error(URL)
             yield event.plain_result(f'制作失败，请到控制台查看详情')
         else:
             yield event.image_result(f'{URL}')
+
+    @filter.command('arona')
+    async def arona(self, event: AstrMessageEvent):
+        """生成阿罗娜丢"""
+        sender_id = event.get_sender_id()
+        message = event.get_messages()
+        message_chain = event.get_messages()  # 用户所发的消息的消息链 # from astrbot.api.message_components import *
+        logger.info(message_chain)
+
+        qq_id = sender_id
+        for comp in message:
+            if isinstance(comp, At):
+                qq_id = comp.qq
+                break
+
+        yield event.plain_result(f'制作中')
+
+        URL = getimg(qq_id, key='arona_throw')
+        if URL is None:
+            yield event.plain_result(f'制作失败，请到控制台查看详细')
+        elif URL in error_code:
+            yield event.plain_result(f'制作失败，请到控制台查看详细')
+            logger.error(URL)
+        else:
+            yield event.image_result(f"{URL}")
 
     async def terminate(self):
         """可选择实现异步的插件销毁方法，当插件被卸载/停用时会调用。"""
