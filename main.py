@@ -81,5 +81,26 @@ class MyPlugin(Star):
         else:
             yield event.plain_result(f'{img_url}')
 
+    @filter.command('plana')
+    async def plana(self, event: AstrMessageEvent):
+        """生成阿罗娜丢"""
+        yield event.plain_result(f'制作中')
+        img_url = self._hand_image_command(event, key="plana_eat")
+        if 'http' in img_url:
+            yield event.image_result(f'{img_url}')
+        else:
+            yield (event.plain_result(f'{img_url}')
+
+
+    @filter.command('capoo'))
+    async def capoo(self, event: AstrMessageEvent):
+        """生成阿罗娜丢"""
+        yield event.plain_result(f'制作中')
+        img_url = self._hand_image_command(event, key="play_baseball")
+        if 'http' in img_url:
+            yield event.image_result(f'{img_url}')
+        else:
+            yield event.plain_result(f'{img_url}')
+
     async def terminate(self):
         """可选择实现异步的插件销毁方法，当插件被卸载/停用时会调用。"""
