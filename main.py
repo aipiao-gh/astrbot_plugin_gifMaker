@@ -65,7 +65,7 @@ class MyPlugin(Star):
     async def doro(self, event: AstrMessageEvent):
         """生成doro敲头"""  # 这是 handler 的描述，将会被解析方便用户了解插件内容。建议填写。
         yield event.plain_result(f'制作中')
-        img_url = self._hand_image_command(event,key="arona_throw")
+        img_url = self._hand_image_command(event,key="doro_banging")
         if 'http' in img_url:
             yield event.image_result(f'{img_url}')
         else:
@@ -75,7 +75,7 @@ class MyPlugin(Star):
     async def arona(self, event: AstrMessageEvent):
         """生成阿罗娜丢"""
         yield event.plain_result(f'制作中')
-        img_url = self._hand_image_command(event, key="doro_banging")
+        img_url = self._hand_image_command(event, key="arona_throw")
         if 'http' in img_url:
             yield event.image_result(f'{img_url}')
         else:
@@ -83,18 +83,18 @@ class MyPlugin(Star):
 
     @filter.command('plana')
     async def plana(self, event: AstrMessageEvent):
-        """生成阿罗娜丢"""
+        """生成普拉那吃"""
         yield event.plain_result(f'制作中')
         img_url = self._hand_image_command(event, key="plana_eat")
         if 'http' in img_url:
             yield event.image_result(f'{img_url}')
         else:
-            yield (event.plain_result(f'{img_url}')
+            yield event.plain_result(f'{img_url}')
 
 
-    @filter.command('capoo'))
+    @filter.command('capoo')
     async def capoo(self, event: AstrMessageEvent):
-        """生成阿罗娜丢"""
+        """生成capoo打棒球"""
         yield event.plain_result(f'制作中')
         img_url = self._hand_image_command(event, key="play_baseball")
         if 'http' in img_url:
