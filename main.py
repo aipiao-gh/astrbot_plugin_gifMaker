@@ -20,7 +20,7 @@ def getimg(qq, key, api):
     }
 
     try:
-        response =httpx.get(url, params=params,timeout=5.0)
+        response =httpx.get(url, params=params,timeout=15.0)
         data = response.json()
     except httpx.HTTPStatusError and httpx.ReadTimeout as e:
         return f"API 服务异常 (HTTP {e.response.status_code})"
