@@ -2,5 +2,11 @@
   "Key": {
     "type": "string",
     "description": "调用需要的Key"
+  },
+  "Timeout": {
+    "type": "int",
+    "description": "Timeout的时限（秒）",
+    "hint": "如果经常调用失败可适当调高时限",
+    "default": 15
   }
 }
